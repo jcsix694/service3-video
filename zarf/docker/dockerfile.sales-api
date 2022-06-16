@@ -14,14 +14,14 @@ RUN go build -ldflags "-X main.build=${BUILD_REF}"
 FROM alpine:3.16
 ARG BUILD_DATE
 ARG BUILD_REF
-COPY --from=build_sales-api /service/app/services/sales-api/sales-api /service/service
+COPY --from=build_sales-api /service/app/services/sales-api/sales-api /service/sales-api
 WORKDIR /service
-CMD ["./service"]
+CMD ["./sales-api"]
 
 # Metadata
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.title="sales-api" \
-      org.opencontainers.image.authors="Jake Sixsmith <jcsix694>" \
+      org.opencontainers.image.authors="Jake Sixsmith <jcsix694@gmail.com>" \
       org.opencontainers.image.source="https://github.com/jcsix694/service3-video" \
       org.opencontainers.image.revision="${BUILD_REF}}" \
       org.opencontainers.image.vendor="Jake" \
