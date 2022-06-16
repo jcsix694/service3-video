@@ -1,5 +1,13 @@
 SHELL := /bin/bash
 
+# ==============================================================================
+# Testing running system
+
+# Terminal: go get github.com/divan/expvarmon
+# Terminal: expvarmon -ports=":4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+
+# ==============================================================================
+
 run:
 	go run app/services/sales-api/main.go | go run app/tooling/logfmt/main.go
 
@@ -32,6 +40,7 @@ kind-up:
 		--name $(KIND_CLUSTER) \
 		--config zarf/k8s/kind/kind-config.yaml
 	kubectl config set-context --current --namespace=sales-system
+	kustomize build zarf/k8s/kind/sales-pod | kubectl apply -f -
 
 kind-down:
 	kind delete cluster --name $(KIND_CLUSTER)
@@ -63,6 +72,8 @@ kind-update-apply: all kind-load kind-apply
 
 kind-describe:
 	kubectl describe pod -l app=sales
+
+kind-setup: all kind-up kind-load kind-apply
 
 # ==============================================================================
 # Modules support
