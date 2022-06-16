@@ -6,15 +6,15 @@ ARG BUILD_REF
 # Copys source code into the container
 COPY . /service
 
-# Builds service binary
-WORKDIR /service
+# Build the service binary.
+WORKDIR /service/app/services/sales-api
 RUN go build -ldflags "-X main.build=${BUILD_REF}"
 
 # Buils service in alpine
-FROM alpine:3.14
-ARG BUILD_REF
+FROM alpine:3.16
 ARG BUILD_DATE
-COPY --from=build_sales-api /service /service/service
+ARG BUILD_REF
+COPY --from=build_sales-api /service/app/services/sales-api/sales-api /service/service
 WORKDIR /service
 CMD ["./service"]
 
