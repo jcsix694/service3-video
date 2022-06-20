@@ -40,13 +40,11 @@ type APIMuxConfig struct {
 
 // APIMux constructs a http.Handler with all application routes defined.
 func APIMux(cfg APIMuxConfig) *web.App {
+	// construct the web app
 	app := web.NewApp(cfg.Shutdown)
 
-	// Register debug check endpoints.
-	tgh := testgrp.Handlers{
-		Log: cfg.Log,
-	}
-	app.Handle(http.MethodGet, "/v1/test", tgh.Test)
+	// load in the routes
+	v1(app, cfg)
 
 	return app
 }
@@ -67,4 +65,15 @@ func DebugMux(build string, log *zap.SugaredLogger) http.Handler {
 	mux.HandleFunc("/debug/liveness", cgh.Liveness)
 
 	return mux
+}
+
+// v1 bindings
+func v1(app *web.App, cfg APIMuxConfig) {
+	const version = "v1"
+
+	// Register debug check endpoints.
+	tgh := testgrp.Handlers{
+		Log: cfg.Log,
+	}
+	app.Handle(http.MethodGet, version, "/test", tgh.Test)
 }

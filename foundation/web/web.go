@@ -2,11 +2,17 @@
 package web
 
 import (
+	"context"
+	"net/http"
 	"os"
 	"syscall"
 
 	"github.com/dimfeld/httptreemux/v5"
 )
+
+// A Handler is a type that handles a http request within our own little mini
+// framework.
+type Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request) error
 
 // App is the entrypoint into our application and what configures our context
 // object for each of our http handlers. Feel free to add any configuration
@@ -28,4 +34,23 @@ func NewApp(shutdown chan os.Signal) *App {
 // issue is identified.
 func (a *App) SignalShutdown() {
 	a.shutdown <- syscall.SIGTERM
+}
+
+// Hanlde sets an handler function for a given http method
+// to the applications server mux.
+func (a *App) Handle(method string, group string, path string, handler Handler) {
+	h := func(w http.ResponseWriter, r *http.Request) {
+
+		if err := handler(r.Context(), w, r); err != nil {
+			// ERROR HANLE
+			return
+		}
+	}
+
+	finalPath := path
+	if group != "" {
+		finalPath = "/" + group + path
+	}
+
+	a.ContextMux.Handle(method, finalPath, h)
 }
