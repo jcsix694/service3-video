@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"expvar"
+	"github.com/jcsix694/service3-video/business/web/mid"
 	"github.com/jcsix694/service3-video/foundation/web"
 	"net/http"
 	"net/http/pprof"
@@ -41,7 +42,8 @@ type APIMuxConfig struct {
 // APIMux constructs a http.Handler with all application routes defined.
 func APIMux(cfg APIMuxConfig) *web.App {
 	// construct the web app
-	app := web.NewApp(cfg.Shutdown)
+	app := web.NewApp(cfg.Shutdown,
+		mid.Logger(cfg.Log))
 
 	// load in the routes
 	v1(app, cfg)
