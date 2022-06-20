@@ -2,8 +2,8 @@ package testgrp
 
 import (
 	"context"
-	// "errors"
-	// "github.com/jcsix694/service3-video/business/sys/validate"
+	"errors"
+	"github.com/jcsix694/service3-video/business/sys/validate"
 	"github.com/jcsix694/service3-video/foundation/web"
 	"go.uber.org/zap"
 	"math/rand"
@@ -19,9 +19,9 @@ type Handlers struct {
 func (h Handlers) Test(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	if n := rand.Intn(100); n%2 == 0 {
 		// return errors.New("untrusted error")
-		// return validate.NewRequestError(errors.New("trusted error"), http.StatusBadRequest)
+		return validate.NewRequestError(errors.New("trusted error"), http.StatusBadRequest)
 		// return web.NewShutdownError("Restart Service")
-		panic("testing panic")
+		// panic("testing panic")
 	}
 
 	status := struct {

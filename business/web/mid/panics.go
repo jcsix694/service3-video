@@ -3,6 +3,7 @@ package mid
 import (
 	"context"
 	"fmt"
+	"github.com/jcsix694/service3-video/business/sys/metrics"
 	"net/http"
 	"runtime/debug"
 
@@ -27,6 +28,9 @@ func Panics() web.Middleware {
 					// Stack trace will be provided.
 					trace := debug.Stack()
 					err = fmt.Errorf("PANIC [%v] TRACE[%s]", rec, string(trace))
+
+					// Updates the metrics stored in context
+					metrics.AddPanics(ctx)
 				}
 			}()
 

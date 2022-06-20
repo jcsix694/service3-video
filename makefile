@@ -6,6 +6,9 @@ SHELL := /bin/bash
 # Terminal: go get github.com/divan/expvarmon
 # Terminal: expvarmon -ports=":4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
 
+# go install github.com/rakyll/hey@latest
+# hey -m GET -c 100 -n 10000 http://localhost:3000/v1/test
+
 # ==============================================================================
 
 run:
