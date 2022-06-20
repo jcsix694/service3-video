@@ -4,11 +4,11 @@ package handlers
 
 import (
 	"expvar"
+	"github.com/jcsix694/service3-video/foundation/web"
 	"net/http"
 	"net/http/pprof"
 	"os"
 
-	"github.com/dimfeld/httptreemux/v5"
 	"github.com/jcsix694/service3-video/app/services/sales-api/handlers/debug/checkgrp"
 	"github.com/jcsix694/service3-video/app/services/sales-api/handlers/v1/testgrp"
 	"go.uber.org/zap"
@@ -39,16 +39,16 @@ type APIMuxConfig struct {
 }
 
 // APIMux constructs a http.Handler with all application routes defined.
-func APIMux(cfg APIMuxConfig) *httptreemux.ContextMux {
-	mux := httptreemux.NewContextMux()
+func APIMux(cfg APIMuxConfig) *web.App {
+	app := web.NewApp(cfg.Shutdown)
 
 	// Register debug check endpoints.
 	tgh := testgrp.Handlers{
 		Log: cfg.Log,
 	}
-	mux.Handle(http.MethodGet, "/v1/test", tgh.Test)
+	app.Handle(http.MethodGet, "/v1/test", tgh.Test)
 
-	return mux
+	return app
 }
 
 // DebugMux registers all the debug standard library routes and then custom
