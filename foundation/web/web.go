@@ -40,7 +40,7 @@ func (a *App) SignalShutdown() {
 	a.shutdown <- syscall.SIGTERM
 }
 
-// Hanlde sets an handler function for a given http method
+// Handle sets an handler function for a given http method
 // to the applications server mux.
 func (a *App) Handle(method string, group string, path string, handler Handler, mw ...Middleware) {
 
