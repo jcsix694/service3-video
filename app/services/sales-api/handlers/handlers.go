@@ -4,6 +4,7 @@ package handlers
 
 import (
 	"expvar"
+	"github.com/jcsix694/service3-video/business/sys/auth"
 	"github.com/jcsix694/service3-video/business/web/mid"
 	"github.com/jcsix694/service3-video/foundation/web"
 	"net/http"
@@ -37,6 +38,7 @@ func DebugStandardLibraryMux() *http.ServeMux {
 type APIMuxConfig struct {
 	Shutdown chan os.Signal
 	Log      *zap.SugaredLogger
+	Auth     *auth.Auth
 }
 
 // APIMux constructs a http.Handler with all application routes defined.
@@ -83,4 +85,5 @@ func v1(app *web.App, cfg APIMuxConfig) {
 		Log: cfg.Log,
 	}
 	app.Handle(http.MethodGet, version, "/test", tgh.Test)
+	app.Handle(http.MethodGet, version, "/testauth", tgh.Test, mid.Authenticate(cfg.Auth), mid.Authorize("ADMIN"))
 }
