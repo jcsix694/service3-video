@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/jcsix694/service3-video/business/data/schema"
+	"github.com/jcsix694/service3-video/business/data/store/user"
 	"github.com/jcsix694/service3-video/business/sys/auth"
 	"github.com/jcsix694/service3-video/business/sys/database"
 	"github.com/jcsix694/service3-video/foundation/docker"
@@ -149,4 +150,22 @@ func StringPointer(s string) *string {
 // useful in some tests.
 func IntPointer(i int) *int {
 	return &i
+}
+
+// Token generates an authenticated token for a user.
+func (test *Test) Token(email, pass string) string {
+	test.t.Log("Generating token for test ...")
+
+	store := user.NewStore(test.Log, test.DB)
+	claims, err := store.Authenticate(context.Background(), time.Now(), email, pass)
+	if err != nil {
+		test.t.Fatal(err)
+	}
+
+	token, err := test.Auth.GenerateToken(claims)
+	if err != nil {
+		test.t.Fatal(err)
+	}
+
+	return token
 }
