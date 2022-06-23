@@ -5,9 +5,6 @@ import (
 	"errors"
 	"expvar"
 	"fmt"
-	"github.com/jcsix694/service3-video/business/sys/auth"
-	"github.com/jcsix694/service3-video/business/sys/database"
-	"github.com/jcsix694/service3-video/foundation/keystore"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,17 +12,21 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jcsix694/service3-video/business/sys/auth"
+	"github.com/jcsix694/service3-video/business/sys/database"
+	"github.com/jcsix694/service3-video/foundation/keystore"
+	"github.com/jcsix694/service3-video/foundation/logger"
+
 	"github.com/ardanlabs/conf"
 	"github.com/jcsix694/service3-video/app/services/sales-api/handlers"
 	"go.uber.org/automaxprocs/maxprocs"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 var build = "develop"
 
 func main() {
-	log, err := initLoger("SALES-API")
+	log, err := logger.New("SALES-API")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -234,20 +235,4 @@ func run(log *zap.SugaredLogger) error {
 	}
 
 	return nil
-}
-func initLoger(service string) (*zap.SugaredLogger, error) {
-	config := zap.NewProductionConfig()
-	config.OutputPaths = []string{"stdout"}
-	config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	config.DisableStacktrace = true
-	config.InitialFields = map[string]any{
-		"service": service,
-	}
-
-	log, err := config.Build()
-	if err != nil {
-		return nil, err
-	}
-
-	return log.Sugar(), nil
 }
