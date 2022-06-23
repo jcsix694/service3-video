@@ -43,7 +43,7 @@ func (c Core) Create(ctx context.Context, nu user.NewUser, now time.Time) (user.
 func (c Core) Update(ctx context.Context, claims auth.Claims, userID string, uu user.UpdateUser, now time.Time) error {
 
 	if err := c.user.Update(ctx, claims, userID, uu, now); err != nil {
-		fmt.Errorf("update: %w", err)
+		return fmt.Errorf("update: %w", err)
 	}
 
 	return nil
@@ -53,7 +53,7 @@ func (c Core) Update(ctx context.Context, claims auth.Claims, userID string, uu 
 func (c Core) Delete(ctx context.Context, claims auth.Claims, userID string) error {
 
 	if err := c.user.Delete(ctx, claims, userID); err != nil {
-		fmt.Errorf("delete: %w", err)
+		return fmt.Errorf("delete: %w", err)
 	}
 
 	return nil
@@ -69,8 +69,8 @@ func (c Core) Query(ctx context.Context, pageNumber int, rowsPerPage int) ([]use
 	return users, nil
 }
 
-// Query retrieves a user by id.
-func (c Core) QueryById(ctx context.Context, claims auth.Claims, userID string) (user.User, error) {
+// QueryByID retrieves a user by id.
+func (c Core) QueryByID(ctx context.Context, claims auth.Claims, userID string) (user.User, error) {
 
 	user, err := c.user.QueryByID(ctx, claims, userID)
 
@@ -80,7 +80,7 @@ func (c Core) QueryById(ctx context.Context, claims auth.Claims, userID string) 
 	return user, nil
 }
 
-// Query retrieves a user by email.
+// QueryByEmail retrieves a user by email.
 func (c Core) QueryByEmail(ctx context.Context, claims auth.Claims, email string) (user.User, error) {
 
 	user, err := c.user.QueryByEmail(ctx, claims, email)

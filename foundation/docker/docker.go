@@ -40,7 +40,7 @@ func StartContainer(t *testing.T, image string, port string, args ...string) *Co
 
 	var doc []map[string]interface{}
 	if err := json.Unmarshal(out.Bytes(), &doc); err != nil {
-		t.Fatalf("could not decode json: &v", err)
+		t.Fatalf("could not decode json: %v", err)
 	}
 
 	ip, randPort := extractIPPort(t, doc, port)

@@ -1,10 +1,11 @@
-// Package dbschema contains the database schema, migrations and seeding data.
+// Package schema contains the database schema, migrations and seeding data.
 package schema
 
 import (
 	"context"
 	_ "embed" // Calls init function.
 	"fmt"
+
 	"github.com/jcsix694/service3-video/business/sys/database"
 
 	"github.com/ardanlabs/darwin"
