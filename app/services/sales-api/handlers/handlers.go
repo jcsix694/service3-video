@@ -4,13 +4,16 @@ package handlers
 
 import (
 	"expvar"
+	"net/http"
+	"net/http/pprof"
+	"os"
+
+	v1UserGrp "github.com/jcsix694/service3-video/app/services/sales-api/handlers/v1/usergrp"
+	userCore "github.com/jcsix694/service3-video/business/core/user"
 	"github.com/jcsix694/service3-video/business/sys/auth"
 	"github.com/jcsix694/service3-video/business/web/mid"
 	"github.com/jcsix694/service3-video/foundation/web"
 	"github.com/jmoiron/sqlx"
-	"net/http"
-	"net/http/pprof"
-	"os"
 
 	"github.com/jcsix694/service3-video/app/services/sales-api/handlers/debug/checkgrp"
 	"github.com/jcsix694/service3-video/app/services/sales-api/handlers/v1/testgrp"
@@ -87,6 +90,20 @@ func v1(app *web.App, cfg APIMuxConfig) {
 	tgh := testgrp.Handlers{
 		Log: cfg.Log,
 	}
+
 	app.Handle(http.MethodGet, version, "/test", tgh.Test)
 	app.Handle(http.MethodGet, version, "/testauth", tgh.Test, mid.Authenticate(cfg.Auth), mid.Authorize("ADMIN"))
+
+	ugh := v1UserGrp.Handlers{
+		User: userCore.NewCore(cfg.Log, cfg.DB),
+		Auth: cfg.Auth,
+	}
+
+	app.Handle(http.MethodGet, version, "/users/token", ugh.Token)
+	app.Handle(http.MethodGet, version, "/users/:page/:rows", ugh.Query, mid.Authenticate(cfg.Auth), mid.Authorize(auth.RoleAdmin))
+	app.Handle(http.MethodGet, version, "/users/:id", ugh.QueryByID, mid.Authenticate(cfg.Auth))
+	app.Handle(http.MethodPost, version, "/users", ugh.Create, mid.Authenticate(cfg.Auth), mid.Authorize(auth.RoleAdmin))
+	app.Handle(http.MethodPut, version, "/users/:id", ugh.Update, mid.Authenticate(cfg.Auth), mid.Authorize(auth.RoleAdmin))
+	app.Handle(http.MethodDelete, version, "/users/:id", ugh.Delete, mid.Authenticate(cfg.Auth), mid.Authorize(auth.RoleAdmin))
+
 }
