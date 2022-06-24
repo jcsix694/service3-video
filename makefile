@@ -12,8 +12,13 @@ SHELL := /bin/bash
 # go install github.com/rakyll/hey@latest
 # hey -m GET -c 100 -n 10000 -H "Authorization: Bearer ${TOKEN}" http://localhost:3000/v1/users/1/2
 
-# Terminal: go get github.com/divan/expvarmon
-# Terminal: expvarmon -ports=":4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+# Launch zipkin.
+# http://localhost:9411/zipkin/
+
+# Access metrics directly (4000) or through the sidecar (3001)
+# go install github.com/divan/expvarmon@latest
+# expvarmon -ports=":4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+# expvarmon -ports=":3001" -endpoint="/metrics" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
 
 # go install github.com/rakyll/hey@latest
 # hey -m GET -c 100 -n 10000 http://localhost:3000/v1/test
