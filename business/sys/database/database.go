@@ -5,14 +5,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jcsix694/service3-video/foundation/web"
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-	"go.uber.org/zap"
 	"net/url"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/jcsix694/service3-video/foundation/web"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.uber.org/zap"
 )
 
 // Set of error variables for CRUD operations.
@@ -98,6 +101,10 @@ func NamedExecContext(ctx context.Context, log *zap.SugaredLogger, db *sqlx.DB, 
 	q := queryString(query, data)
 	log.Infow("database.NamedExecContext", "traceid", web.GetTraceID(ctx), "query", q)
 
+	ctx, span := otel.GetTracerProvider().Tracer("").Start(ctx, "database.query")
+	span.SetAttributes(attribute.String("query", q))
+	defer span.End()
+
 	if _, err := db.NamedExecContext(ctx, query, data); err != nil {
 		return err
 	}
@@ -110,6 +117,10 @@ func NamedExecContext(ctx context.Context, log *zap.SugaredLogger, db *sqlx.DB, 
 func NamedQuerySlice[T any](ctx context.Context, log *zap.SugaredLogger, db *sqlx.DB, query string, data interface{}, dest *[]T) error {
 	q := queryString(query, data)
 	log.Infow("database.NamedQuerySlice", "traceid", web.GetTraceID(ctx), "query", q)
+
+	ctx, span := otel.GetTracerProvider().Tracer("").Start(ctx, "database.query")
+	span.SetAttributes(attribute.String("query", q))
+	defer span.End()
 
 	val := reflect.ValueOf(dest)
 	if val.Kind() != reflect.Ptr || val.Elem().Kind() != reflect.Slice {
@@ -138,6 +149,10 @@ func NamedQuerySlice[T any](ctx context.Context, log *zap.SugaredLogger, db *sql
 func NamedQueryStruct(ctx context.Context, log *zap.SugaredLogger, db *sqlx.DB, query string, data interface{}, dest any) error {
 	q := queryString(query, data)
 	log.Infow("database.NamedQueryStruct", "traceid", web.GetTraceID(ctx), "query", q)
+
+	ctx, span := otel.GetTracerProvider().Tracer("").Start(ctx, "database.query")
+	span.SetAttributes(attribute.String("query", q))
+	defer span.End()
 
 	rows, err := db.NamedQueryContext(ctx, query, data)
 	if err != nil {
